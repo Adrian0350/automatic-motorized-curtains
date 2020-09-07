@@ -64,18 +64,10 @@ void loop()
 
 	if (oneSecond(now))
 	{
-		Serial.println(now);
+		Serial.println("ONE SECOND");
 	}
 
-
 	last_second = now;
-}
-
-void toggleCurtain(int curtain)
-{
-	Serial.print("Curtain ");
-	Serial.print(curtain);
-	Serial.println("");
 }
 
 bool oneSecond(unsigned long now)

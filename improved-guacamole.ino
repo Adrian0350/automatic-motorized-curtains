@@ -1,3 +1,5 @@
+#include <EEPROM.h>
+
 /**
  * OUTPUT Pins for 2 relays/curtains.
  */
@@ -20,6 +22,10 @@ const int ACTIVE_THRESHOLD = 1020;
  */
 int open  = 0;
 int close = 0;
+int stop  = 1;
+int is_currently_active = 0;
+
+int active_state = 0;
 
 /**
  * Set pin modes and memory setup.
@@ -32,6 +38,8 @@ void setup()
 	pinMode(OPEN_BUTTON, INPUT);
 	pinMode(CLOSE_BUTTON, INPUT);
 
+	EEPROM.write(0, 0);
+
 	Serial.begin(9600);
 }
 
@@ -39,6 +47,23 @@ void loop()
 {
 	open  = analogRead(OPEN_BUTTON);
 	close = analogRead(CLOSE_BUTTON);
+	stop  = open && close;
+
+	is_currently_active = EEPROM.read(0);
+
+	if (is_currently_active && (!open && !close))
+	{
+		if (is_currently_active == 1)
+		{
+			return _open();
+		}
+		if (is_currently_active == 2)
+		{
+			return _close();
+		}
+
+		EEPROM.write(0, is_currently_active = 0);
+	}
 
 	if (open > ACTIVE_THRESHOLD && close > ACTIVE_THRESHOLD)
 	{
@@ -58,6 +83,8 @@ void loop()
 
 void _stop()
 {
+	EEPROM.write(0, 0);
+
 	Serial.println("STOP");
 	digitalWrite(RELAY_OPEN_PIN, LOW);
 	digitalWrite(RELAY_CLOSE_PIN, LOW);
@@ -66,6 +93,8 @@ void _stop()
 
 void _open()
 {
+	EEPROM.write(0, 1);
+
 	Serial.println("OPEN");
 	digitalWrite(RELAY_CLOSE_PIN, LOW);
 	delay(50);
@@ -74,6 +103,8 @@ void _open()
 
 void _close()
 {
+	EEPROM.write(0, 2);
+
 	Serial.println("CLOSE");
 	digitalWrite(RELAY_OPEN_PIN, LOW);
 	delay(50);

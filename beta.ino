@@ -18,17 +18,20 @@
  *	The EEPROM memory has a specified life of 100,000 write/erase cycles,
  *	so you may need to be careful about how often you write to it.
  */
-const int CURTAIN1_TIME_ADDR     = 0;
-const int CURTAIN2_TIME_ADDR     = 1;
-const int CURTAIN1_STATE_ADDR    = 2;
-const int CURTAIN2_STATE_ADDR    = 3;
-const int SYSTEM_LIVE_STATE_ADDR = 4;
+const int CURTAIN1_TIME        = 0;
+const int CURTAIN2_TIME        = 1;
+const int CURTAIN1_STATE       = 2;
+const int CURTAIN2_STATE       = 3;
+const int SYSTEM_LIVE_STATE    = 4;
+const int SYSTEM_CURRENT_STATE = 5;
 
 /**
  * OUTPUT Pins for 2 relays/curtains.
  */
-const int RELAY_OPEN_PIN  = 8;
-const int RELAY_CLOSE_PIN = 9;
+const int CURTAIN_1_OPEN_PIN  = 8;
+const int CURTAIN_1_CLOSE_PIN = 9;
+const int CURTAIN_2_OPEN_PIN  = 6;
+const int CURTAIN_2_CLOSE_PIN = 7;
 
 /**
  * INPUT Analog pins for 2 button commands, _open and close.
@@ -45,7 +48,7 @@ const int ACTIVE_THRESHOLD = 1020;
  * This is an int representing a second.
  * Could rather be in millis (unsigned long) to avoid extra processor operations.
  */
-const int TIME_INTERVAL = 1;
+const int TIME_INTERVAL = 1000;
 
 
 /**
@@ -54,17 +57,24 @@ const int TIME_INTERVAL = 1;
 const int CURTAIN_1_MAX_TIME = 3;
 const int CURTAIN_2_MAX_TIME = 5;
 
+const int STOP_STATE  = 0;
+const int OPEN_STATE  = 1;
+const int CLOSE_STATE = 2;
+
 /**
  * The last calculated second [MEMORY].
  */
 unsigned long last_second = 0;
+unsigned long now = 0;
 
 
 /**
  * Main loop globals.
  */
-int open  = 0;
-int close = 0;
+int open   = 0;
+int close  = 0;
+int stoped = 1;
+int is_currently_active = 0;
 
 /**
  * Set pin modes and memory setup.
@@ -72,8 +82,8 @@ int close = 0;
 void setup()
 {
 	// Setup output pins (digital).
-	pinMode(RELAY_OPEN_PIN, OUTPUT);
-	pinMode(RELAY_CLOSE_PIN, OUTPUT);
+	pinMode(CURTAIN_1_OPEN_PIN, OUTPUT);
+	pinMode(CURTAIN_1_CLOSE_PIN, OUTPUT);
 
 	// Setup input pins (analog).
 	pinMode(OPEN_BUTTON, INPUT);
@@ -81,33 +91,57 @@ void setup()
 
 
 	// If it's first time install write necesary variables.
-	if (!EEPROM.read(SYSTEM_LIVE_STATE_ADDR))
+	if (!EEPROM.read(SYSTEM_LIVE_STATE))
 	{
 		// Write the timing for each curtain (change to zero) PROLLY DONT NEED THIS.
-		EEPROM.write(CURTAIN1_TIME_ADDR, CURTAIN_1_MAX_TIME);
-		EEPROM.write(CURTAIN2_TIME_ADDR, CURTAIN_2_MAX_TIME);
+		EEPROM.write(CURTAIN1_TIME, CURTAIN_1_MAX_TIME);
+		EEPROM.write(CURTAIN2_TIME, CURTAIN_2_MAX_TIME);
 
 		// Set each curtain to a low state (OFF).
-		EEPROM.write(CURTAIN1_STATE_ADDR, LOW);
-		EEPROM.write(CURTAIN2_STATE_ADDR, LOW);
+		EEPROM.write(CURTAIN1_STATE, LOW);
+		EEPROM.write(CURTAIN2_STATE, LOW);
+
+		// Write: sets the current system state, should be STOP.
+		EEPROM.write(SYSTEM_CURRENT_STATE, STOP_STATE);
 
 		// Write that the system has been turned on for the first time.
-		EEPROM.write(SYSTEM_LIVE_STATE_ADDR, true);
+		EEPROM.write(SYSTEM_LIVE_STATE, true);
+		Serial.println("ALWAYS ENTERS");
 	}
 
+	is_currently_active = EEPROM.read(SYSTEM_CURRENT_STATE);
+
 	// Set globals to the last saved state written in memory.
-	curtain_1_state = EEPROM.read(CURTAIN1_STATE_ADDR);
-	curtain_2_state = EEPROM.read(CURTAIN2_STATE_ADDR);
+	// curtain_1_state = EEPROM.read(CURTAIN1_STATE);
+	// curtain_2_state = EEPROM.read(CURTAIN2_STATE);
 
 	Serial.begin(9600);
 }
 
 void loop()
 {
-	open  = analogRead(OPEN_BUTTON);
-	close = analogRead(CLOSE_BUTTON);
+	open   = analogRead(OPEN_BUTTON);
+	close  = analogRead(CLOSE_BUTTON);
 
-	if (open > ACTIVE_THRESHOLD && close > ACTIVE_THRESHOLD)
+	stoped = open > ACTIVE_THRESHOLD && close > ACTIVE_THRESHOLD;
+	now    = millis();
+
+	if (is_currently_active && stoped)
+	{
+		if (is_currently_active == OPEN_STATE)
+		{
+			return _open();
+		}
+		if (is_currently_active == CLOSE_STATE)
+		{
+			return _close();
+		}
+
+		EEPROM.write(SYSTEM_CURRENT_STATE, STOP_STATE);
+		is_currently_active = STOP_STATE;
+	}
+
+	if (stoped)
 	{
 		return _stop();
 	}
@@ -121,34 +155,57 @@ void loop()
 	{
 		return _close();
 	}
+
+	Serial.println("END");
 }
 
 void _stop()
 {
-	Serial.println("STOP");
-	digitalWrite(RELAY_OPEN_PIN, LOW);
-	digitalWrite(RELAY_CLOSE_PIN, LOW);
-	delay(50);
+	EEPROM.write(SYSTEM_CURRENT_STATE, STOP_STATE);
+	is_currently_active = STOP_STATE;
+
+	digitalWrite(CURTAIN_1_OPEN_PIN, LOW);
+	digitalWrite(CURTAIN_1_CLOSE_PIN, LOW);
+
+	if (oneSecond(now))
+	{
+		Serial.println("STOP");
+	}
+	last_second = now;
 }
 
 void _open()
 {
-	Serial.println("OPEN");
-	digitalWrite(RELAY_CLOSE_PIN, LOW);
-	delay(50);
-	digitalWrite(RELAY_OPEN_PIN, HIGH);
+	EEPROM.write(SYSTEM_CURRENT_STATE, OPEN_STATE);
+	is_currently_active = OPEN_STATE;
+
+	digitalWrite(CURTAIN_1_CLOSE_PIN, LOW);
+	digitalWrite(CURTAIN_1_OPEN_PIN, HIGH);
+
+	if (oneSecond(now))
+	{
+		Serial.println("OPEN");
+	}
+	last_second = now;
 }
 
 void _close()
 {
-	Serial.println("CLOSE");
-	digitalWrite(RELAY_OPEN_PIN, LOW);
-	delay(50);
-	digitalWrite(RELAY_CLOSE_PIN, HIGH);
+	EEPROM.write(SYSTEM_CURRENT_STATE, CLOSE_STATE);
+	is_currently_active = CLOSE_STATE;
+
+	digitalWrite(CURTAIN_1_OPEN_PIN, LOW);
+	digitalWrite(CURTAIN_1_CLOSE_PIN, HIGH);
+
+	if (oneSecond(now))
+	{
+		Serial.println("CLOSE");
+	}
+	last_second = now;
 }
 
 
-bool oneSecond(unsigned long now)
+bool oneSecond(unsigned long time_now)
 {
-	return (unsigned long)(now - last_second) == TIME_INTERVAL;
+	return ((unsigned long) time_now - last_second) >= TIME_INTERVAL;
 }
