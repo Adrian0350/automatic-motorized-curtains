@@ -22,20 +22,64 @@ const int CURTAIN1_TIME_ADDR     = 0;
 const int CURTAIN2_TIME_ADDR     = 1;
 const int CURTAIN1_STATE_ADDR    = 2;
 const int CURTAIN2_STATE_ADDR    = 3;
-const int SYSTEM_LIVE_STATE_ADDR = 0;
+const int SYSTEM_LIVE_STATE_ADDR = 4;
 
+/**
+ * OUTPUT Pins for 2 relays/curtains.
+ */
+const int RELAY_OPEN_PIN  = 8;
+const int RELAY_CLOSE_PIN = 9;
+
+/**
+ * INPUT Analog pins for 2 button commands, _open and close.
+ */
+const int OPEN_BUTTON  = A4;
+const int CLOSE_BUTTON = A5;
+
+/**
+ * Active threshold; when voltage signal equals or greater than.
+ */
+const int ACTIVE_THRESHOLD = 1020;
+
+/**
+ * This is an int representing a second.
+ * Could rather be in millis (unsigned long) to avoid extra processor operations.
+ */
 const int TIME_INTERVAL = 1;
 
+
+/**
+ * Each curtain maximum time (the time it takes for it to open or close completely).
+ */
 const int CURTAIN_1_MAX_TIME = 3;
 const int CURTAIN_2_MAX_TIME = 5;
 
-int curtain_1_state = LOW;
-int curtain_2_state = LOW;
-
+/**
+ * The last calculated second [MEMORY].
+ */
 unsigned long last_second = 0;
 
+
+/**
+ * Main loop globals.
+ */
+int open  = 0;
+int close = 0;
+
+/**
+ * Set pin modes and memory setup.
+ */
 void setup()
 {
+	// Setup output pins (digital).
+	pinMode(RELAY_OPEN_PIN, OUTPUT);
+	pinMode(RELAY_CLOSE_PIN, OUTPUT);
+
+	// Setup input pins (analog).
+	pinMode(OPEN_BUTTON, INPUT);
+	pinMode(CLOSE_BUTTON, INPUT);
+
+
 	// If it's first time install write necesary variables.
 	if (!EEPROM.read(SYSTEM_LIVE_STATE_ADDR))
 	{
@@ -60,23 +104,49 @@ void setup()
 
 void loop()
 {
-	unsigned long now = millis() / 1000;
+	open  = analogRead(OPEN_BUTTON);
+	close = analogRead(CLOSE_BUTTON);
 
-	if (oneSecond(now))
+	if (open > ACTIVE_THRESHOLD && close > ACTIVE_THRESHOLD)
 	{
-		Serial.println(now);
+		return _stop();
 	}
 
+	if (close > ACTIVE_THRESHOLD)
+	{
+		return _open();
+	}
 
-	last_second = now;
+	if (open > ACTIVE_THRESHOLD)
+	{
+		return _close();
+	}
 }
 
-void toggleCurtain(int curtain)
+void _stop()
 {
-	Serial.print("Curtain ");
-	Serial.print(curtain);
-	Serial.println("");
+	Serial.println("STOP");
+	digitalWrite(RELAY_OPEN_PIN, LOW);
+	digitalWrite(RELAY_CLOSE_PIN, LOW);
+	delay(50);
 }
+
+void _open()
+{
+	Serial.println("OPEN");
+	digitalWrite(RELAY_CLOSE_PIN, LOW);
+	delay(50);
+	digitalWrite(RELAY_OPEN_PIN, HIGH);
+}
+
+void _close()
+{
+	Serial.println("CLOSE");
+	digitalWrite(RELAY_OPEN_PIN, LOW);
+	delay(50);
+	digitalWrite(RELAY_CLOSE_PIN, HIGH);
+}
+
 
 bool oneSecond(unsigned long now)
 {

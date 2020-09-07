@@ -1,86 +1,81 @@
-#include <EEPROM.h>
-
 /**
  * OUTPUT Pins for 2 relays/curtains.
  */
-const int RELAY_UP_PIN   = 8;
-const int RELAY_DOWN_PIN = 9;
+const int RELAY_OPEN_PIN  = 8;
+const int RELAY_CLOSE_PIN = 9;
 
 /**
- * INPUT Analog pins for 2 button commands, up and down.
+ * INPUT Analog pins for 2 button commands, _open and close.
  */
-const int DOWN_BUTTON    = A4;
-const int UP_BUTTON      = A5;
-
+const int OPEN_BUTTON  = A4;
+const int CLOSE_BUTTON = A5;
 
 /**
- * The states are memory addresses indicating which byte
- * to use (variable name describes whom it belongs to).
- *
- * EEPROM memory size by Arduino:
- * - Arduno Duemilanove: 512b EEPROM storage.
- * - Arduino Uno:        1kb  EEPROM storage.
- * - Arduino Mega:       4kb  EEPROM storage.
- *
- * Since we're only storing time representation in seconds (up to 15 seconds),
- * 1 byte will sufice for each relay state/time.
- *
- *
- * Extra notes:
- *	An EEPROM write takes 3.3 ms to complete.
- *	The EEPROM memory has a specified life of 100,000 write/erase cycles,
- *	so you may need to be careful about how often you write to it.
+ * Active threshold; when voltage signal equals or greater than.
  */
-const int RELAY_UP_TIME_ADDR   = 0;
-const int RELAY_DOWN_TIME_ADDR = 1;
+const int ACTIVE_THRESHOLD = 1020;
 
-int down_button     = 0;
-int up_button       = 0;
-
-boolean relay_up_state   = false;
-boolean relay_down_state = false;
+/**
+ * GLOBALS
+ */
+int open  = 0;
+int close = 0;
 
 /**
  * Set pin modes and memory setup.
  */
 void setup()
 {
-	pinMode(RELAY_UP_PIN, OUTPUT);
-	pinMode(RELAY_DOWN_PIN, OUTPUT);
+	pinMode(RELAY_OPEN_PIN, OUTPUT);
+	pinMode(RELAY_CLOSE_PIN, OUTPUT);
 
-	pinMode(DOWN_BUTTON, INPUT);
-	pinMode(UP_BUTTON, INPUT);
+	pinMode(OPEN_BUTTON, INPUT);
+	pinMode(CLOSE_BUTTON, INPUT);
 
 	Serial.begin(9600);
 }
 
 void loop()
 {
-	int down_button = analogRead(DOWN_BUTTON);
-	int up_button   = analogRead(UP_BUTTON);
+	open  = analogRead(OPEN_BUTTON);
+	close = analogRead(CLOSE_BUTTON);
 
-	if (down_button > 1020 && up_button > 1020)
+	if (open > ACTIVE_THRESHOLD && close > ACTIVE_THRESHOLD)
 	{
-		digitalWrite(RELAY_UP_PIN, LOW);
-		digitalWrite(RELAY_DOWN_PIN, LOW);
-	}
-
-	if (down_button > 1020)
-	{
-		digitalWrite(RELAY_UP_PIN, HIGH);
-	}
-	else
-	{
-		digitalWrite(RELAY_UP_PIN, LOW);
+		return _stop();
 	}
 
+	if (close > ACTIVE_THRESHOLD)
+	{
+		return _open();
+	}
 
-	if (up_button > 1020)
+	if (open > ACTIVE_THRESHOLD)
 	{
-		digitalWrite(RELAY_DOWN_PIN, HIGH);
+		return _close();
 	}
-	else
-	{
-		digitalWrite(RELAY_DOWN_PIN, LOW);
-	}
+}
+
+void _stop()
+{
+	Serial.println("STOP");
+	digitalWrite(RELAY_OPEN_PIN, LOW);
+	digitalWrite(RELAY_CLOSE_PIN, LOW);
+	delay(50);
+}
+
+void _open()
+{
+	Serial.println("OPEN");
+	digitalWrite(RELAY_CLOSE_PIN, LOW);
+	delay(50);
+	digitalWrite(RELAY_OPEN_PIN, HIGH);
+}
+
+void _close()
+{
+	Serial.println("CLOSE");
+	digitalWrite(RELAY_OPEN_PIN, LOW);
+	delay(50);
+	digitalWrite(RELAY_CLOSE_PIN, HIGH);
 }
