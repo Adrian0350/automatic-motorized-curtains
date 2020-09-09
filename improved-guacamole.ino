@@ -20,6 +20,7 @@
  */
 // const int CURTAIN1_TIME        = 0;
 // const int CURTAIN2_TIME        = 1;
+const int CURTAIN_TIMER        = 1;
 const int CURTAIN_1_TIMER      = 2;
 const int CURTAIN_2_TIMER      = 3;
 const int SYSTEM_LIVE_STATE    = 4;
@@ -28,10 +29,10 @@ const int SYSTEM_CURRENT_STATE = 5;
 /**
  * OUTPUT Pins for 2 relays [ON|OFF] per curtain.
  */
-const int CURTAIN_1_OPEN_PIN  = 8;
-const int CURTAIN_1_CLOSE_PIN = 9;
-const int CURTAIN_2_OPEN_PIN  = 6;
-const int CURTAIN_2_CLOSE_PIN = 7;
+const int CURTAIN_1_OPEN_PIN  = 6;
+const int CURTAIN_1_CLOSE_PIN = 7;
+const int CURTAIN_2_OPEN_PIN  = 8;
+const int CURTAIN_2_CLOSE_PIN = 9;
 
 /**
  * INPUT Analog pins for 2 button commands [OPEN|CLOSE|STOP].
@@ -55,10 +56,9 @@ const int TIME_INTERVAL = 1;
 /**
  * Each curtain maximum time (the time it takes for it to open or close completely).
  */
+const int CURTAIN_MIN_TIME   = 0;
 const int CURTAIN_1_MAX_TIME = 10;
 const int CURTAIN_2_MAX_TIME = 15;
-const int CURTAIN_1_MIN_TIME = 0;
-const int CURTAIN_2_MIN_TIME = 0;
 
 /**
  * The 3 states of the curtains as numbers {0,1,2}.
@@ -70,8 +70,7 @@ const int CLOSE_STATE = 2;
 /**
  * Curtain timers accumulators.
  */
-int curtain_1_timer = 0;
-int curtain_2_timer = 0;
+int curtain_timer   = 0;
 
 /**
  * The last calculated second [MEMORY].
@@ -111,8 +110,7 @@ void setup()
 		Serial.println("First Time Setup");
 
 		// Set each curtain to a closed state timer [zero].
-		EEPROM.write(CURTAIN_1_TIMER, CURTAIN_1_MIN_TIME);
-		EEPROM.write(CURTAIN_2_TIMER, CURTAIN_2_MIN_TIME);
+		EEPROM.write(CURTAIN_TIMER, CURTAIN_MIN_TIME);
 
 		// Write: sets the current system state, should be STOP.
 		EEPROM.write(SYSTEM_CURRENT_STATE, STOP_STATE);
@@ -123,8 +121,7 @@ void setup()
 
 	// Set globals to the last saved state written in memory.
 	last_second         = millis() / 1000;
-	curtain_1_timer     = EEPROM.read(CURTAIN_1_TIMER);
-	curtain_2_timer     = EEPROM.read(CURTAIN_2_TIMER);
+	curtain_timer       = EEPROM.read(CURTAIN_TIMER);
 	is_currently_active = EEPROM.read(SYSTEM_CURRENT_STATE);
 
 	if (is_currently_active == STOP_STATE)
@@ -143,6 +140,8 @@ void setup()
 
 void loop()
 {
+	delay(50);
+
 	now   = millis() / 1000;
 	open  = analogRead(OPEN_BUTTON);
 	close = analogRead(CLOSE_BUTTON);
@@ -202,45 +201,42 @@ void _open()
 
 	if (oneSecond(now))
 	{
-		if (curtain_1_timer < CURTAIN_1_MAX_TIME)
+		curtain_timer += 1;
+		if (curtain_timer < CURTAIN_1_MAX_TIME)
 		{
 			Serial.print("Opening curtain 1 -> ");
+			Serial.println(curtain_timer);
 
 			digitalWrite(CURTAIN_1_CLOSE_PIN, LOW);
 			digitalWrite(CURTAIN_1_OPEN_PIN, HIGH);
-
-			EEPROM.write(CURTAIN_1_TIMER, curtain_1_timer += 1);
-
-			Serial.println(curtain_1_timer);
 		}
 		else
 		{
+			curtains_opened += 1;
+
 			digitalWrite(CURTAIN_1_CLOSE_PIN, LOW);
 			digitalWrite(CURTAIN_1_OPEN_PIN, LOW);
-
-			curtains_opened += 1;
 		}
 
-		if (curtain_2_timer < CURTAIN_2_MAX_TIME)
+		if (curtain_timer < CURTAIN_2_MAX_TIME)
 		{
 			Serial.print("Opening curtain 2 -> ");
+			Serial.println(curtain_timer);
 
 			digitalWrite(CURTAIN_2_CLOSE_PIN, LOW);
 			digitalWrite(CURTAIN_2_OPEN_PIN, HIGH);
-
-			EEPROM.write(CURTAIN_2_TIMER, curtain_2_timer += 1);
-
-			Serial.println(curtain_2_timer);
 		}
 		else
 		{
+			curtains_opened += 1;
+
 			digitalWrite(CURTAIN_2_CLOSE_PIN, LOW);
 			digitalWrite(CURTAIN_2_OPEN_PIN, LOW);
-
-			curtains_opened += 1;
 		}
 
 		Serial.println("");
+
+		EEPROM.write(CURTAIN_TIMER, curtain_timer);
 	}
 
 	if (curtains_opened == 2)
@@ -258,45 +254,43 @@ void _close()
 
 	if (oneSecond(now))
 	{
-		if (curtain_1_timer > CURTAIN_1_MIN_TIME)
+		curtain_timer -= 1;
+
+		if (curtain_timer > CURTAIN_1_MIN_TIME)
 		{
 			Serial.print("Closing curtain 1 -> ");
+			Serial.println(curtain_timer);
 
 			digitalWrite(CURTAIN_1_OPEN_PIN, LOW);
 			digitalWrite(CURTAIN_1_CLOSE_PIN, HIGH);
-
-			EEPROM.write(CURTAIN_1_TIMER, curtain_1_timer -= 1);
-
-			Serial.println(curtain_1_timer);
 		}
 		else
 		{
+			curtains_closed += 1;
+
 			digitalWrite(CURTAIN_1_CLOSE_PIN, LOW);
 			digitalWrite(CURTAIN_1_OPEN_PIN, LOW);
-
-			curtains_closed += 1;
 		}
 
-		if (curtain_2_timer > CURTAIN_2_MIN_TIME)
+		if (curtain_timer > CURTAIN_2_MIN_TIME)
 		{
 			Serial.print("Closing curtain 2 -> ");
+			Serial.println(curtain_timer);
 
 			digitalWrite(CURTAIN_2_OPEN_PIN, LOW);
 			digitalWrite(CURTAIN_2_CLOSE_PIN, HIGH);
-
-			EEPROM.write(CURTAIN_2_TIMER, curtain_2_timer -= 1);
-
-			Serial.println(curtain_2_timer);
 		}
 		else
 		{
+			curtains_closed += 1;
+
 			digitalWrite(CURTAIN_2_CLOSE_PIN, LOW);
 			digitalWrite(CURTAIN_2_OPEN_PIN, LOW);
-
-			curtains_closed += 1;
 		}
 
 		Serial.println("");
+
+		EEPROM.write(CURTAIN_TIMER, curtain_timer);
 	}
 
 	if (curtains_closed == 2)
