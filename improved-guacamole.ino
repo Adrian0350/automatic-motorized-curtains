@@ -1,13 +1,41 @@
 #include <EEPROM.h>
 
 /**
- * OUTPUT Pins for 2 relays/curtains.
+ * The states are memory addresses indicating which byte
+ * to use (variable name describes whom it belongs to).
+ *
+ * EEPROM memory size by Arduino:
+ * - Arduno Duemilanove: 512b EEPROM storage.
+ * - Arduino Uno:        1kb  EEPROM storage.
+ * - Arduino Mega:       4kb  EEPROM storage.
+ *
+ * Since we're only storing time representation in seconds (up to 15 seconds),
+ * 1 byte (8 bits > 0-255) will sufice for each relay state/time.
+ *
+ *
+ * Extra notes:
+ *	An EEPROM write takes 3.3 ms to complete.
+ *	The EEPROM memory has a specified life of 100,000 write/erase cycles,
+ *	so you may need to be careful about how often you write to it.
  */
-const int RELAY_OPEN_PIN  = 8;
-const int RELAY_CLOSE_PIN = 9;
+// const int CURTAIN1_TIME        = 0;
+// const int CURTAIN2_TIME        = 1;
+const int CURTAIN_1_TIMER      = 2;
+const int CURTAIN_2_TIMER      = 3;
+const int SYSTEM_LIVE_STATE    = 4;
+const int SYSTEM_CURRENT_STATE = 5;
 
 /**
- * INPUT Analog pins for 2 button commands, _open and close.
+ * OUTPUT Pins for 2 relays [ON|OFF] per curtain.
+ */
+const int CURTAIN_1_OPEN_PIN  = 8;
+const int CURTAIN_1_CLOSE_PIN = 9;
+const int CURTAIN_2_OPEN_PIN  = 6;
+const int CURTAIN_2_CLOSE_PIN = 7;
+
+/**
+ * INPUT Analog pins for 2 button commands [OPEN|CLOSE|STOP].
+ * STOP state will be interpreted by reading input 1 and 2 at the same time having inputs > ACTIVE_THRESHOLD.
  */
 const int OPEN_BUTTON  = A4;
 const int CLOSE_BUTTON = A5;
@@ -18,95 +46,279 @@ const int CLOSE_BUTTON = A5;
 const int ACTIVE_THRESHOLD = 1020;
 
 /**
- * GLOBALS
+ * This is an int representing a second.
+ * Could rather be in millis (unsigned long) to avoid extra processor operations.
  */
-int open  = 0;
-int close = 0;
-int stop  = 1;
-int is_currently_active = 0;
+const int TIME_INTERVAL = 1;
 
-int active_state = 0;
+
+/**
+ * Each curtain maximum time (the time it takes for it to open or close completely).
+ */
+const int CURTAIN_1_MAX_TIME = 10;
+const int CURTAIN_2_MAX_TIME = 15;
+const int CURTAIN_1_MIN_TIME = 0;
+const int CURTAIN_2_MIN_TIME = 0;
+
+/**
+ * The 3 states of the curtains as numbers {0,1,2}.
+ */
+const int STOP_STATE  = 0;
+const int OPEN_STATE  = 1;
+const int CLOSE_STATE = 2;
+
+/**
+ * Curtain timers accumulators.
+ */
+int curtain_1_timer = 0;
+int curtain_2_timer = 0;
+
+/**
+ * The last calculated second [MEMORY].
+ * And the time now as global as to avoid passing params in functions.
+ */
+unsigned long last_second = 0;
+unsigned long now = 0;
+
+
+/**
+ * Main loop globals.
+ */
+int open   = 0;
+int close  = 0;
+int stop   = 1;
+int is_currently_active = 0;
 
 /**
  * Set pin modes and memory setup.
  */
 void setup()
 {
-	pinMode(RELAY_OPEN_PIN, OUTPUT);
-	pinMode(RELAY_CLOSE_PIN, OUTPUT);
+	Serial.begin(9600);
 
+	// Setup output pins (digital).
+	pinMode(CURTAIN_1_OPEN_PIN, OUTPUT);
+	pinMode(CURTAIN_1_CLOSE_PIN, OUTPUT);
+
+	// Setup input pins (analog).
 	pinMode(OPEN_BUTTON, INPUT);
 	pinMode(CLOSE_BUTTON, INPUT);
 
-	EEPROM.write(0, 0);
 
-	Serial.begin(9600);
+	// If it's first time install write necesary variables.
+	if (!EEPROM.read(SYSTEM_LIVE_STATE))
+	{
+		Serial.println("First Time Setup");
+
+		// Set each curtain to a closed state timer [zero].
+		EEPROM.write(CURTAIN_1_TIMER, CURTAIN_1_MIN_TIME);
+		EEPROM.write(CURTAIN_2_TIMER, CURTAIN_2_MIN_TIME);
+
+		// Write: sets the current system state, should be STOP.
+		EEPROM.write(SYSTEM_CURRENT_STATE, STOP_STATE);
+
+		// Write that the system has been turned on for the first time.
+		EEPROM.write(SYSTEM_LIVE_STATE, true);
+	}
+
+	// Set globals to the last saved state written in memory.
+	last_second         = millis() / 1000;
+	curtain_1_timer     = EEPROM.read(CURTAIN_1_TIMER);
+	curtain_2_timer     = EEPROM.read(CURTAIN_2_TIMER);
+	is_currently_active = EEPROM.read(SYSTEM_CURRENT_STATE);
+
+	if (is_currently_active == STOP_STATE)
+	{
+		_stop();
+	}
+	if (is_currently_active == OPEN_STATE)
+	{
+		_open();
+	}
+	if (is_currently_active == CLOSE_STATE)
+	{
+		_close();
+	}
 }
 
 void loop()
 {
+	now   = millis() / 1000;
 	open  = analogRead(OPEN_BUTTON);
 	close = analogRead(CLOSE_BUTTON);
-	stop  = open && close;
+	stop  = open > ACTIVE_THRESHOLD && close > ACTIVE_THRESHOLD;
 
-	is_currently_active = EEPROM.read(0);
+	int no_input = !stop && !open && !close;
 
-	if (is_currently_active && (!open && !close))
+	if (no_input && is_currently_active)
 	{
-		if (is_currently_active == 1)
+		if (is_currently_active == OPEN_STATE)
 		{
 			return _open();
 		}
-		if (is_currently_active == 2)
+		if (is_currently_active == CLOSE_STATE)
 		{
 			return _close();
 		}
-
-		EEPROM.write(0, is_currently_active = 0);
 	}
 
-	if (open > ACTIVE_THRESHOLD && close > ACTIVE_THRESHOLD)
+	if (stop)
 	{
 		return _stop();
 	}
 
-	if (close > ACTIVE_THRESHOLD)
+	if (open > ACTIVE_THRESHOLD)
 	{
 		return _open();
 	}
 
-	if (open > ACTIVE_THRESHOLD)
+	if (close > ACTIVE_THRESHOLD)
 	{
 		return _close();
 	}
+
+	last_second = now;
 }
 
 void _stop()
 {
-	EEPROM.write(0, 0);
+	setState(STOP_STATE);
 
-	Serial.println("STOP");
-	digitalWrite(RELAY_OPEN_PIN, LOW);
-	digitalWrite(RELAY_CLOSE_PIN, LOW);
-	delay(50);
+	Serial.println("Stop");
+
+	digitalWrite(CURTAIN_1_OPEN_PIN, LOW);
+	digitalWrite(CURTAIN_1_CLOSE_PIN, LOW);
+
+	digitalWrite(CURTAIN_2_OPEN_PIN, LOW);
+	digitalWrite(CURTAIN_2_CLOSE_PIN, LOW);
+
+	last_second = now;
 }
 
 void _open()
 {
-	EEPROM.write(0, 1);
+	setState(OPEN_STATE);
+	int curtains_opened = 0;
 
-	Serial.println("OPEN");
-	digitalWrite(RELAY_CLOSE_PIN, LOW);
-	delay(50);
-	digitalWrite(RELAY_OPEN_PIN, HIGH);
+	if (oneSecond(now))
+	{
+		if (curtain_1_timer < CURTAIN_1_MAX_TIME)
+		{
+			Serial.print("Opening curtain 1 -> ");
+
+			digitalWrite(CURTAIN_1_CLOSE_PIN, LOW);
+			digitalWrite(CURTAIN_1_OPEN_PIN, HIGH);
+
+			EEPROM.write(CURTAIN_1_TIMER, curtain_1_timer += 1);
+
+			Serial.println(curtain_1_timer);
+		}
+		else
+		{
+			digitalWrite(CURTAIN_1_CLOSE_PIN, LOW);
+			digitalWrite(CURTAIN_1_OPEN_PIN, LOW);
+
+			curtains_opened += 1;
+		}
+
+		if (curtain_2_timer < CURTAIN_2_MAX_TIME)
+		{
+			Serial.print("Opening curtain 2 -> ");
+
+			digitalWrite(CURTAIN_2_CLOSE_PIN, LOW);
+			digitalWrite(CURTAIN_2_OPEN_PIN, HIGH);
+
+			EEPROM.write(CURTAIN_2_TIMER, curtain_2_timer += 1);
+
+			Serial.println(curtain_2_timer);
+		}
+		else
+		{
+			digitalWrite(CURTAIN_2_CLOSE_PIN, LOW);
+			digitalWrite(CURTAIN_2_OPEN_PIN, LOW);
+
+			curtains_opened += 1;
+		}
+
+		Serial.println("");
+	}
+
+	if (curtains_opened == 2)
+	{
+		return _stop();
+	}
+
+	last_second = now;
 }
 
 void _close()
 {
-	EEPROM.write(0, 2);
+	setState(CLOSE_STATE);
+	int curtains_closed = 0;
 
-	Serial.println("CLOSE");
-	digitalWrite(RELAY_OPEN_PIN, LOW);
-	delay(50);
-	digitalWrite(RELAY_CLOSE_PIN, HIGH);
+	if (oneSecond(now))
+	{
+		if (curtain_1_timer > CURTAIN_1_MIN_TIME)
+		{
+			Serial.print("Closing curtain 1 -> ");
+
+			digitalWrite(CURTAIN_1_OPEN_PIN, LOW);
+			digitalWrite(CURTAIN_1_CLOSE_PIN, HIGH);
+
+			EEPROM.write(CURTAIN_1_TIMER, curtain_1_timer -= 1);
+
+			Serial.println(curtain_1_timer);
+		}
+		else
+		{
+			digitalWrite(CURTAIN_1_CLOSE_PIN, LOW);
+			digitalWrite(CURTAIN_1_OPEN_PIN, LOW);
+
+			curtains_closed += 1;
+		}
+
+		if (curtain_2_timer > CURTAIN_2_MIN_TIME)
+		{
+			Serial.print("Closing curtain 2 -> ");
+
+			digitalWrite(CURTAIN_2_OPEN_PIN, LOW);
+			digitalWrite(CURTAIN_2_CLOSE_PIN, HIGH);
+
+			EEPROM.write(CURTAIN_2_TIMER, curtain_2_timer -= 1);
+
+			Serial.println(curtain_2_timer);
+		}
+		else
+		{
+			digitalWrite(CURTAIN_2_CLOSE_PIN, LOW);
+			digitalWrite(CURTAIN_2_OPEN_PIN, LOW);
+
+			curtains_closed += 1;
+		}
+
+		Serial.println("");
+	}
+
+	if (curtains_closed == 2)
+	{
+		return _stop();
+	}
+
+	last_second = now;
+}
+
+bool oneSecond(unsigned long time_now)
+{
+	return ((unsigned long) time_now - last_second) == TIME_INTERVAL;
+}
+
+void setState(int state)
+{
+	// Do not write in memory if not needed to prolong memory lifespan.
+	if (state == is_currently_active)
+	{
+		return;
+	}
+
+	EEPROM.write(SYSTEM_CURRENT_STATE, is_currently_active = state);
 }
