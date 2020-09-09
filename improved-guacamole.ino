@@ -202,6 +202,7 @@ void _open()
 	if (oneSecond(now))
 	{
 		curtain_timer += 1;
+
 		if (curtain_timer < CURTAIN_1_MAX_TIME)
 		{
 			Serial.print("Opening curtain 1 -> ");
