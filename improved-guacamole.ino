@@ -120,9 +120,9 @@ void setup()
 	}
 
 	// Set globals to the last saved state written in memory.
-	last_second         = millis() / 1000;
 	curtain_timer       = EEPROM.read(CURTAIN_TIMER);
 	is_currently_active = EEPROM.read(SYSTEM_CURRENT_STATE);
+	last_second         = millis() / 1000; // Set the time here because you'll lose time reading memory.
 
 	if (is_currently_active == STOP_STATE)
 	{
@@ -256,7 +256,7 @@ void _close()
 	{
 		curtain_timer -= 1;
 
-		if (curtain_timer > CURTAIN_1_MIN_TIME)
+		if (curtain_timer > (CURTAIN_2_MAX_TIME - CURTAIN_1_MAX_TIME))
 		{
 			Serial.print("Closing curtain 1 -> ");
 			Serial.println(curtain_timer);
@@ -272,7 +272,7 @@ void _close()
 			digitalWrite(CURTAIN_1_OPEN_PIN, LOW);
 		}
 
-		if (curtain_timer > CURTAIN_2_MIN_TIME)
+		if (curtain_timer > CURTAIN_MIN_TIME && curtain_timer <= CURTAIN_2_MAX_TIME)
 		{
 			Serial.print("Closing curtain 2 -> ");
 			Serial.println(curtain_timer);
