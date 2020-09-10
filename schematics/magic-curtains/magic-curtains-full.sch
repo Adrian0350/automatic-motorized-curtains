@@ -131,6 +131,8 @@ F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/ATmega328_P%20AVR%20MCU%20w
 	1    2100 3100
 	1    0    0    -1  
 $EndComp
+Text Notes 2150 3100 0    50   ~ 0
+A0-A5
 Wire Notes Line style dash_dot rgb(0, 132, 132)
 	2050 2750 2600 2750
 Wire Notes Line
@@ -163,7 +165,7 @@ Wire Wire Line
 	650  750  650  1300
 Text Notes 2800 5600 2    39   Italic 0
 Curtain Down (OPEN)
-Text Notes 3350 5700 2    39   Italic 0
+Text Notes 4400 5700 2    39   Italic 0
 Curtain Up (CLOSE)
 Wire Notes Line
 	2050 4350 2050 3550
@@ -205,13 +207,13 @@ Wire Notes Line
 	2250 2450 2600 2450
 Wire Wire Line
 	2850 3800 6250 3800
-Text Notes 7100 3800 2    39   Italic 0
+Text Notes 6000 3900 2    39   Italic 0
 Curtain 1 Up (CLOSE)
-Text Notes 7150 3500 2    39   Italic 0
+Text Notes 6050 3800 2    39   Italic 0
 Curtain 1 Down (OPEN)
-Text Notes 7150 4100 2    39   Italic 0
+Text Notes 6050 4000 2    39   Italic 0
 Curtain 2 Down (OPEN)
-Text Notes 7100 4400 2    39   Italic 0
+Text Notes 6000 4100 2    39   Italic 0
 Curtain 2 Up (CLOSE)
 Wire Wire Line
 	2850 2900 3500 2900
@@ -353,18 +355,217 @@ F 3 "~" H 7500 4400 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 Connection ~ 650  1300
+$Comp
+L Connector:Conn_01x01_Female OUT1
+U 1 1 5F63059F
+P 8100 3500
+F 0 "OUT1" H 8128 3526 50  0000 L CNN
+F 1 "5v" H 8128 3435 50  0000 L CNN
+F 2 "" H 8100 3500 50  0001 C CNN
+F 3 "~" H 8100 3500 50  0001 C CNN
+	1    8100 3500
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:Conn_01x01_Female OUT2
+U 1 1 5F6317AD
+P 8100 3800
+F 0 "OUT2" H 8128 3826 50  0000 L CNN
+F 1 "5v" H 8128 3735 50  0000 L CNN
+F 2 "" H 8100 3800 50  0001 C CNN
+F 3 "~" H 8100 3800 50  0001 C CNN
+	1    8100 3800
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:Conn_01x01_Female OUT3
+U 1 1 5F631D32
+P 8100 4100
+F 0 "OUT3" H 8128 4126 50  0000 L CNN
+F 1 "5v" H 8128 4035 50  0000 L CNN
+F 2 "" H 8100 4100 50  0001 C CNN
+F 3 "~" H 8100 4100 50  0001 C CNN
+	1    8100 4100
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:Conn_01x01_Female OUT4
+U 1 1 5F632113
+P 8100 4400
+F 0 "OUT4" H 8128 4426 50  0000 L CNN
+F 1 "5v" H 8128 4335 50  0000 L CNN
+F 2 "" H 8100 4400 50  0001 C CNN
+F 3 "~" H 8100 4400 50  0001 C CNN
+	1    8100 4400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7650 3500 7900 3500
+Wire Wire Line
+	7650 3800 7900 3800
+Wire Wire Line
+	7900 4100 7650 4100
+Wire Wire Line
+	7650 4400 7900 4400
+$Comp
+L Relay:ADW11 K?
+U 1 1 5F638E72
+P 1800 6900
+F 0 "K?" H 1370 6854 50  0000 R CNN
+F 1 "ADW11" H 1370 6945 50  0000 R CNN
+F 2 "Relay_THT:Relay_1P1T_NO_10x24x18.8mm_Panasonic_ADW11xxxxW_THT" H 3125 6850 50  0001 C CNN
+F 3 "https://www.panasonic-electric-works.com/pew/es/downloads/ds_dw_hl_en.pdf" H 1800 6900 50  0001 C CNN
+	1    1800 6900
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Relay:ADW11 K?
+U 1 1 5F63B455
+P 3500 6900
+F 0 "K?" H 3070 6854 50  0000 R CNN
+F 1 "ADW11" H 3070 6945 50  0000 R CNN
+F 2 "Relay_THT:Relay_1P1T_NO_10x24x18.8mm_Panasonic_ADW11xxxxW_THT" H 4825 6850 50  0001 C CNN
+F 3 "https://www.panasonic-electric-works.com/pew/es/downloads/ds_dw_hl_en.pdf" H 3500 6900 50  0001 C CNN
+	1    3500 6900
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Connector:Conn_01x01_Female External1
+U 1 1 5F6B2913
+P 1300 7650
+F 0 "External1" V 1146 7698 50  0000 L CNN
+F 1 "Vv" V 1237 7698 50  0000 L CNN
+F 2 "" H 1300 7650 50  0001 C CNN
+F 3 "~" H 1300 7650 50  0001 C CNN
+	1    1300 7650
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	1300 7450 1300 7100
+Wire Wire Line
+	1300 7100 1500 7100
+Wire Wire Line
+	2100 7100 2300 7100
+Wire Wire Line
+	2300 7100 2300 7450
+Wire Wire Line
+	2950 7450 2950 7100
+Wire Wire Line
+	2950 7100 3200 7100
+Wire Wire Line
+	4000 7450 4000 7100
+Wire Wire Line
+	4000 7100 3800 7100
+Wire Wire Line
+	650  6600 1500 6600
+Wire Wire Line
+	650  1300 650  6000
+Wire Wire Line
+	650  6000 3000 6000
+Wire Wire Line
+	3000 6000 3000 6600
+Wire Wire Line
+	3000 6600 3200 6600
+Connection ~ 650  6000
+Wire Wire Line
+	650  6000 650  6600
 Wire Wire Line
 	4350 5600 2100 5600
 Wire Wire Line
+	2100 5600 2100 6700
+Wire Wire Line
 	4350 4700 4350 5600
 Wire Wire Line
+	3800 5700 3800 6700
+Wire Wire Line
 	4450 4600 4450 5700
+Wire Wire Line
+	4450 5700 3800 5700
+$Comp
+L Connector:Conn_01x01_Female External2
+U 1 1 5F6D5C97
+P 2300 7650
+F 0 "External2" V 2146 7698 50  0000 L CNN
+F 1 "Vv" V 2237 7698 50  0000 L CNN
+F 2 "" H 2300 7650 50  0001 C CNN
+F 3 "~" H 2300 7650 50  0001 C CNN
+	1    2300 7650
+	0    1    1    0   
+$EndComp
+$Comp
+L Connector:Conn_01x01_Female External3
+U 1 1 5F6D61C8
+P 2950 7650
+F 0 "External3" V 2796 7698 50  0000 L CNN
+F 1 "Vv" V 2887 7698 50  0000 L CNN
+F 2 "" H 2950 7650 50  0001 C CNN
+F 3 "~" H 2950 7650 50  0001 C CNN
+	1    2950 7650
+	0    1    1    0   
+$EndComp
+$Comp
+L Connector:Conn_01x01_Female External4
+U 1 1 5F6D66BA
+P 4000 7650
+F 0 "External4" V 3846 7698 50  0000 L CNN
+F 1 "Vv" V 3937 7698 50  0000 L CNN
+F 2 "" H 4000 7650 50  0001 C CNN
+F 3 "~" H 4000 7650 50  0001 C CNN
+	1    4000 7650
+	0    1    1    0   
+$EndComp
+Text Notes 2350 7000 0    39   Italic 8
+CRESTRON MPC-M5
 Wire Wire Line
 	2850 3900 6350 3900
 Wire Wire Line
 	2850 4000 6350 4000
 Wire Wire Line
 	2850 4100 6250 4100
+$Comp
+L Relay_SolidState:S102S02 U?
+U 1 1 5F709CAF
+P 10250 2750
+F 0 "U?" H 10250 3075 50  0000 C CNN
+F 1 "S102S02" H 10250 2984 50  0000 C CNN
+F 2 "Package_SIP:SIP4_Sharp-SSR_P7.62mm_Straight" H 10050 2550 50  0001 L CIN
+F 3 "http://www.sharp-world.com/products/device/lineup/data/pdf/datasheet/s102s02_e.pdf" H 10250 2750 50  0001 L CNN
+	1    10250 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L Relay_SolidState:S102S02 U?
+U 1 1 5F70CD40
+P 10250 3500
+F 0 "U?" H 10250 3825 50  0000 C CNN
+F 1 "S102S02" H 10250 3734 50  0000 C CNN
+F 2 "Package_SIP:SIP4_Sharp-SSR_P7.62mm_Straight" H 10050 3300 50  0001 L CIN
+F 3 "http://www.sharp-world.com/products/device/lineup/data/pdf/datasheet/s102s02_e.pdf" H 10250 3500 50  0001 L CNN
+	1    10250 3500
+	1    0    0    -1  
+$EndComp
+$Comp
+L Relay_SolidState:S102S02 U?
+U 1 1 5F70F091
+P 10250 4600
+F 0 "U?" H 10250 4925 50  0000 C CNN
+F 1 "S102S02" H 10250 4834 50  0000 C CNN
+F 2 "Package_SIP:SIP4_Sharp-SSR_P7.62mm_Straight" H 10050 4400 50  0001 L CIN
+F 3 "http://www.sharp-world.com/products/device/lineup/data/pdf/datasheet/s102s02_e.pdf" H 10250 4600 50  0001 L CNN
+	1    10250 4600
+	1    0    0    -1  
+$EndComp
+$Comp
+L Relay_SolidState:S102S02 U?
+U 1 1 5F70FD8A
+P 10250 5350
+F 0 "U?" H 10250 5675 50  0000 C CNN
+F 1 "S102S02" H 10250 5584 50  0000 C CNN
+F 2 "Package_SIP:SIP4_Sharp-SSR_P7.62mm_Straight" H 10050 5150 50  0001 L CIN
+F 3 "http://www.sharp-world.com/products/device/lineup/data/pdf/datasheet/s102s02_e.pdf" H 10250 5350 50  0001 L CNN
+	1    10250 5350
+	1    0    0    -1  
+$EndComp
 Wire Wire Line
 	6250 3800 6250 3500
 Wire Wire Line
@@ -382,9 +583,17 @@ Wire Wire Line
 Wire Wire Line
 	6350 4100 7350 4100
 Wire Wire Line
+	8100 3500 8350 3500
+Wire Wire Line
+	8100 3800 8550 3800
+Wire Wire Line
 	8550 3800 8550 3400
 Wire Wire Line
 	8550 3400 9950 3400
+Wire Wire Line
+	8100 4100 8550 4100
+Wire Wire Line
+	8100 4400 8400 4400
 Wire Wire Line
 	8400 4400 8400 5250
 Wire Wire Line
@@ -421,167 +630,12 @@ Wire Wire Line
 Connection ~ 9550 2850
 Wire Wire Line
 	9550 2850 9550 3600
-Text Notes 10550 2800 0    39   Italic 8
+Text Notes 10700 2750 0    39   Italic 8
 CUR1 (OPEN)
-Text Notes 10550 3550 0    39   Italic 8
+Text Notes 10700 3500 0    39   Italic 8
 CUR1 (CLOSE)
-Text Notes 10550 4650 0    39   Italic 8
+Text Notes 10700 4600 0    39   Italic 8
 CUR2 (OPEN)
-Text Notes 10550 5400 0    39   Italic 8
+Text Notes 10700 5350 0    39   Italic 8
 CUR2 (CLOSE)
-$Comp
-L Connector:Conn_01x01_Female INPUT_1
-U 1 1 5F787B3E
-P 2100 7650
-F 0 "INPUT_1" V 1950 7850 50  0000 C CNN
-F 1 "5v" V 2050 7750 50  0000 L CNN
-F 2 "" H 2100 7650 50  0001 C CNN
-F 3 "~" H 2100 7650 50  0001 C CNN
-	1    2100 7650
-	0    1    1    0   
-$EndComp
-$Comp
-L Connector:Conn_01x01_Female INPUT_2
-U 1 1 5F789F90
-P 2700 7650
-F 0 "INPUT_2" V 2550 7700 50  0000 L CNN
-F 1 "5v" V 2650 7750 50  0000 L CNN
-F 2 "" H 2700 7650 50  0001 C CNN
-F 3 "~" H 2700 7650 50  0001 C CNN
-	1    2700 7650
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	650  1300 650  7150
-Wire Wire Line
-	650  7150 1200 7150
-Wire Wire Line
-	1200 7150 1200 7450
-Connection ~ 650  7150
-Wire Wire Line
-	650  7150 650  7450
-$Comp
-L Connector:Conn_01x01_Male OUTPUT_1
-U 1 1 5F78F3E5
-P 650 7650
-F 0 "OUTPUT_1" V 804 7562 50  0000 R CNN
-F 1 "5v" V 713 7562 50  0000 R CNN
-F 2 "" H 650 7650 50  0001 C CNN
-F 3 "~" H 650 7650 50  0001 C CNN
-	1    650  7650
-	0    -1   -1   0   
-$EndComp
-$Comp
-L Connector:Conn_01x01_Male OUTPUT_2
-U 1 1 5F79335B
-P 1200 7650
-F 0 "OUTPUT_2" V 1354 7562 50  0000 R CNN
-F 1 "5v" V 1263 7562 50  0000 R CNN
-F 2 "" H 1200 7650 50  0001 C CNN
-F 3 "~" H 1200 7650 50  0001 C CNN
-	1    1200 7650
-	0    -1   -1   0   
-$EndComp
-Wire Wire Line
-	2700 5700 2700 7450
-Wire Wire Line
-	2100 5600 2100 7450
-Wire Wire Line
-	2700 5700 4450 5700
-$Comp
-L Connector:Conn_01x01_Male OUTPUT_1
-U 1 1 5F7B40CC
-P 10150 2650
-F 0 "OUTPUT_1" H 10122 2582 50  0000 R CNN
-F 1 "5v" H 10122 2673 50  0000 R CNN
-F 2 "" H 10150 2650 50  0001 C CNN
-F 3 "~" H 10150 2650 50  0001 C CNN
-	1    10150 2650
-	-1   0    0    1   
-$EndComp
-$Comp
-L Connector:Conn_01x01_Male OUTPUT_2
-U 1 1 5F7B583C
-P 10150 3400
-F 0 "OUTPUT_2" H 10122 3332 50  0000 R CNN
-F 1 "5v" H 10122 3423 50  0000 R CNN
-F 2 "" H 10150 3400 50  0001 C CNN
-F 3 "~" H 10150 3400 50  0001 C CNN
-	1    10150 3400
-	-1   0    0    1   
-$EndComp
-$Comp
-L Connector:Conn_01x01_Male OUTPUT_3
-U 1 1 5F7B59E6
-P 10150 4500
-F 0 "OUTPUT_3" H 10122 4432 50  0000 R CNN
-F 1 "5v" H 10122 4523 50  0000 R CNN
-F 2 "" H 10150 4500 50  0001 C CNN
-F 3 "~" H 10150 4500 50  0001 C CNN
-	1    10150 4500
-	-1   0    0    1   
-$EndComp
-$Comp
-L Connector:Conn_01x01_Male OUTPUT_4
-U 1 1 5F7B603D
-P 10150 5250
-F 0 "OUTPUT_4" H 10122 5182 50  0000 R CNN
-F 1 "5v" H 10122 5273 50  0000 R CNN
-F 2 "" H 10150 5250 50  0001 C CNN
-F 3 "~" H 10150 5250 50  0001 C CNN
-	1    10150 5250
-	-1   0    0    1   
-$EndComp
-Wire Wire Line
-	7650 3500 8350 3500
-Wire Wire Line
-	7650 3800 8550 3800
-Wire Wire Line
-	7650 4100 8550 4100
-Wire Wire Line
-	7650 4400 8400 4400
-$Comp
-L Connector:Conn_01x01_Female GND_4
-U 1 1 5F7C7770
-P 10150 5450
-F 0 "GND_4" H 10178 5476 50  0000 L CNN
-F 1 "5v" H 10178 5385 50  0000 L CNN
-F 2 "" H 10150 5450 50  0001 C CNN
-F 3 "~" H 10150 5450 50  0001 C CNN
-	1    10150 5450
-	1    0    0    -1  
-$EndComp
-$Comp
-L Connector:Conn_01x01_Female GND_3
-U 1 1 5F7C7F52
-P 10150 4700
-F 0 "GND_3" H 10178 4726 50  0000 L CNN
-F 1 "5v" H 10178 4635 50  0000 L CNN
-F 2 "" H 10150 4700 50  0001 C CNN
-F 3 "~" H 10150 4700 50  0001 C CNN
-	1    10150 4700
-	1    0    0    -1  
-$EndComp
-$Comp
-L Connector:Conn_01x01_Female GND_2
-U 1 1 5F7C842F
-P 10150 3600
-F 0 "GND_2" H 10178 3626 50  0000 L CNN
-F 1 "5v" H 10178 3535 50  0000 L CNN
-F 2 "" H 10150 3600 50  0001 C CNN
-F 3 "~" H 10150 3600 50  0001 C CNN
-	1    10150 3600
-	1    0    0    -1  
-$EndComp
-$Comp
-L Connector:Conn_01x01_Female GND_1
-U 1 1 5F7C899F
-P 10150 2850
-F 0 "GND_1" H 10178 2876 50  0000 L CNN
-F 1 "5v" H 10178 2785 50  0000 L CNN
-F 2 "" H 10150 2850 50  0001 C CNN
-F 3 "~" H 10150 2850 50  0001 C CNN
-	1    10150 2850
-	1    0    0    -1  
-$EndComp
 $EndSCHEMATC
