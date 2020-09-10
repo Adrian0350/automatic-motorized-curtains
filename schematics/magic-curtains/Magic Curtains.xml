@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="D">
+  <design>
+    <source>/Users/adrian/developer/schematics/magic-curtains/Magic Curtains.sch</source>
+    <date>2020 September 10, Thursday 02:46:21</date>
+    <tool>Eeschema (5.1.6-0-10_14)</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title/>
+        <company/>
+        <rev/>
+        <date/>
+        <source>Magic Curtains.sch</source>
+        <comment number="1" value=""/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="Crystal1">
+      <value>16Mhz</value>
+      <datasheet>~</datasheet>
+      <libsource lib="Device" part="Crystal" description="Two pin crystal"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5F5A2950</tstamp>
+    </comp>
+    <comp ref="R1">
+      <value>10k</value>
+      <datasheet>~</datasheet>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5F5A495B</tstamp>
+    </comp>
+    <comp ref="C3">
+      <value>10uF</value>
+      <datasheet>~</datasheet>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5F5A574C</tstamp>
+    </comp>
+    <comp ref="C2">
+      <value>22pF</value>
+      <datasheet>~</datasheet>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5F5A622D</tstamp>
+    </comp>
+    <comp ref="C1">
+      <value>22pF</value>
+      <datasheet>~</datasheet>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5F5A6820</tstamp>
+    </comp>
+    <comp ref="Control1">
+      <value>ATmega328P-PU</value>
+      <footprint>Package_DIP:DIP-28_W7.62mm</footprint>
+      <datasheet>http://ww1.microchip.com/downloads/en/DeviceDoc/ATmega328_P%20AVR%20MCU%20with%20picoPower%20Technology%20Data%20Sheet%2040001984A.pdf</datasheet>
+      <libsource lib="MCU_Microchip_ATmega" part="ATmega328P-PU" description="20MHz, 32kB Flash, 2kB SRAM, 1kB EEPROM, DIP-28"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5F5BF002</tstamp>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="Device" part="C">
+      <description>Unpolarized capacitor</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>C_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">C</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Device" part="Crystal">
+      <description>Two pin crystal</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Crystal*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">Y</field>
+        <field name="Value">Crystal</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Device" part="R">
+      <description>Resistor</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>R_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">R</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="MCU_Microchip_ATmega" part="ATmega48PV-10PU">
+      <aliases>
+        <alias>ATmega48P-20PU</alias>
+        <alias>ATmega48A-PU</alias>
+        <alias>ATmega48PA-PU</alias>
+        <alias>ATmega88PV-10PU</alias>
+        <alias>ATmega88P-20PU</alias>
+        <alias>ATmega88A-PU</alias>
+        <alias>ATmega88PA-PU</alias>
+        <alias>ATmega168PV-10PU</alias>
+        <alias>ATmega168P-20PU</alias>
+        <alias>ATmega168A-PU</alias>
+        <alias>ATmega168PA-PU</alias>
+        <alias>ATmega328-PU</alias>
+        <alias>ATmega328P-PU</alias>
+      </aliases>
+      <description>10MHz, 4kB Flash, 512B SRAM, 256B EEPROM, DIP-28</description>
+      <docs>http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-8025-8-bit-AVR-Microcontroller-ATmega48P-88P-168P_Datasheet.pdf</docs>
+      <footprints>
+        <fp>DIP*W7.62mm*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">ATmega48PV-10PU</field>
+        <field name="Footprint">Package_DIP:DIP-28_W7.62mm</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~RESET~/PC6" type="BiDi"/>
+        <pin num="2" name="PD0" type="BiDi"/>
+        <pin num="3" name="PD1" type="BiDi"/>
+        <pin num="4" name="PD2" type="BiDi"/>
+        <pin num="5" name="PD3" type="BiDi"/>
+        <pin num="6" name="PD4" type="BiDi"/>
+        <pin num="7" name="VCC" type="power_in"/>
+        <pin num="8" name="GND" type="power_in"/>
+        <pin num="9" name="XTAL1/PB6" type="BiDi"/>
+        <pin num="10" name="XTAL2/PB7" type="BiDi"/>
+        <pin num="11" name="PD5" type="BiDi"/>
+        <pin num="12" name="PD6" type="BiDi"/>
+        <pin num="13" name="PD7" type="BiDi"/>
+        <pin num="14" name="PB0" type="BiDi"/>
+        <pin num="15" name="PB1" type="BiDi"/>
+        <pin num="16" name="PB2" type="BiDi"/>
+        <pin num="17" name="PB3" type="BiDi"/>
+        <pin num="18" name="PB4" type="BiDi"/>
+        <pin num="19" name="PB5" type="BiDi"/>
+        <pin num="20" name="AVCC" type="power_in"/>
+        <pin num="21" name="AREF" type="passive"/>
+        <pin num="22" name="GND" type="passive"/>
+        <pin num="23" name="PC0" type="BiDi"/>
+        <pin num="24" name="PC1" type="BiDi"/>
+        <pin num="25" name="PC2" type="BiDi"/>
+        <pin num="26" name="PC3" type="BiDi"/>
+        <pin num="27" name="PC4" type="BiDi"/>
+        <pin num="28" name="PC5" type="BiDi"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="Device">
+      <uri>/Library/Application Support/kicad/library/Device.lib</uri>
+    </library>
+    <library logical="MCU_Microchip_ATmega">
+      <uri>/Library/Application Support/kicad/library/MCU_Microchip_ATmega.lib</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="+5V">
+      <node ref="R1" pin="1"/>
+      <node ref="Control1" pin="7"/>
+      <node ref="Control1" pin="20"/>
+      <node ref="C3" pin="2"/>
+    </net>
+    <net code="2" name="Net-(C1-Pad2)">
+      <node ref="Control1" pin="9"/>
+      <node ref="Crystal1" pin="1"/>
+      <node ref="C1" pin="2"/>
+    </net>
+    <net code="3" name="Net-(C2-Pad1)">
+      <node ref="Crystal1" pin="2"/>
+      <node ref="Control1" pin="10"/>
+      <node ref="C2" pin="1"/>
+    </net>
+    <net code="4" name="Net-(Control1-Pad1)">
+      <node ref="R1" pin="2"/>
+      <node ref="Control1" pin="1"/>
+    </net>
+    <net code="5" name="Net-(Control1-Pad11)">
+      <node ref="Control1" pin="11"/>
+    </net>
+    <net code="6" name="Net-(Control1-Pad12)">
+      <node ref="Control1" pin="12"/>
+    </net>
+    <net code="7" name="Net-(Control1-Pad13)">
+      <node ref="Control1" pin="13"/>
+    </net>
+    <net code="8" name="Net-(Control1-Pad14)">
+      <node ref="Control1" pin="14"/>
+    </net>
+    <net code="9" name="Net-(Control1-Pad15)">
+      <node ref="Control1" pin="15"/>
+    </net>
+    <net code="10" name="Net-(Control1-Pad16)">
+      <node ref="Control1" pin="16"/>
+    </net>
+    <net code="11" name="Net-(Control1-Pad17)">
+      <node ref="Control1" pin="17"/>
+    </net>
+    <net code="12" name="Net-(Control1-Pad18)">
+      <node ref="Control1" pin="18"/>
+    </net>
+    <net code="13" name="Net-(Control1-Pad19)">
+      <node ref="Control1" pin="19"/>
+    </net>
+    <net code="14" name="Net-(Control1-Pad2)">
+      <node ref="Control1" pin="2"/>
+    </net>
+    <net code="15" name="Net-(Control1-Pad21)">
+      <node ref="Control1" pin="21"/>
+    </net>
+    <net code="16" name="A0">
+      <node ref="Control1" pin="23"/>
+    </net>
+    <net code="17" name="A1">
+      <node ref="Control1" pin="24"/>
+    </net>
+    <net code="18" name="A2">
+      <node ref="Control1" pin="25"/>
+    </net>
+    <net code="19" name="A3">
+      <node ref="Control1" pin="26"/>
+    </net>
+    <net code="20" name="A4">
+      <node ref="Control1" pin="27"/>
+    </net>
+    <net code="21" name="A5">
+      <node ref="Control1" pin="28"/>
+    </net>
+    <net code="22" name="Net-(Control1-Pad3)">
+      <node ref="Control1" pin="3"/>
+    </net>
+    <net code="23" name="Net-(Control1-Pad4)">
+      <node ref="Control1" pin="4"/>
+    </net>
+    <net code="24" name="Net-(Control1-Pad5)">
+      <node ref="Control1" pin="5"/>
+    </net>
+    <net code="25" name="Net-(Control1-Pad6)">
+      <node ref="Control1" pin="6"/>
+    </net>
+    <net code="26" name="GND">
+      <node ref="Control1" pin="22"/>
+      <node ref="C3" pin="1"/>
+      <node ref="Control1" pin="8"/>
+      <node ref="C2" pin="2"/>
+      <node ref="C1" pin="1"/>
+    </net>
+  </nets>
+</export>
