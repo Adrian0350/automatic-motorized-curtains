@@ -18,8 +18,6 @@
  *	The EEPROM memory has a specified life of 100,000 write/erase cycles,
  *	so you may need to be careful about how often you write to it.
  */
-// const int CURTAIN1_TIME        = 0;
-// const int CURTAIN2_TIME        = 1;
 const int CURTAIN_TIMER        = 1;
 const int CURTAIN_1_TIMER      = 2;
 const int CURTAIN_2_TIMER      = 3;
@@ -140,6 +138,9 @@ void setup()
 	}
 }
 
+/**
+ * The main loop.
+ */
 void loop()
 {
 	delay(50);
@@ -181,6 +182,9 @@ void loop()
 	last_second = now;
 }
 
+/**
+ * Turn low state all the output pins and set the system state to stop.
+ */
 void _stop()
 {
 	setState(STOP_STATE);
@@ -196,6 +200,9 @@ void _stop()
 	last_second = now;
 }
 
+/**
+ * Manage to open curtains 1 and 2.
+ */
 void _open()
 {
 	setState(OPEN_STATE);
@@ -250,6 +257,9 @@ void _open()
 	last_second = now;
 }
 
+/**
+ * Manage to close curtains 1 and 2.
+ */
 void _close()
 {
 	setState(CLOSE_STATE);
@@ -304,11 +314,17 @@ void _close()
 	last_second = now;
 }
 
+/**
+ * Check if 1 second has elapsed sinced the last time millis() was called.
+ */
 bool oneSecond(unsigned long time_now)
 {
 	return ((unsigned long) time_now - last_second) == TIME_INTERVAL;
 }
 
+/**
+ * Sets the system state as well as in EEPROM [memory].
+ */
 void setState(int state)
 {
 	// Do not write in memory if not needed to prolong memory lifespan.

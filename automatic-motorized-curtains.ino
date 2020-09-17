@@ -52,7 +52,6 @@ const int ACTIVE_THRESHOLD = 1000;
  */
 const int TIME_INTERVAL = 1;
 
-
 /**
  * Each curtain maximum time (the time it takes for it to open or close completely).
  */
