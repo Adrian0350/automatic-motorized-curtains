@@ -92,8 +92,6 @@ int is_currently_active = 0;
  */
 void setup()
 {
-	Serial.begin(9600);
-
 	// Setup output pins (digital).
 	pinMode(CURTAIN_1_OPEN_PIN, OUTPUT);
 	pinMode(CURTAIN_1_CLOSE_PIN, OUTPUT);
@@ -108,8 +106,6 @@ void setup()
 	// If it's first time install write necesary variables.
 	if (!EEPROM.read(SYSTEM_LIVE_STATE))
 	{
-		Serial.println("First Time Setup");
-
 		// Set each curtain to a closed state timer [zero].
 		EEPROM.write(CURTAIN_TIMER, CURTAIN_MIN_TIME);
 
@@ -236,8 +232,6 @@ void _open()
 			digitalWrite(CURTAIN_2_CLOSE_PIN, LOW);
 			digitalWrite(CURTAIN_2_OPEN_PIN, LOW);
 		}
-
-		Serial.println("");
 
 		EEPROM.write(CURTAIN_TIMER, curtain_timer);
 	}
