@@ -29,10 +29,10 @@ const int SYSTEM_CURRENT_STATE = 5;
 /**
  * OUTPUT Pins for 2 relays [ON|OFF] per curtain.
  */
-const int CURTAIN_1_OPEN_PIN  = 6;
-const int CURTAIN_1_CLOSE_PIN = 7;
-const int CURTAIN_2_OPEN_PIN  = 8;
-const int CURTAIN_2_CLOSE_PIN = 9;
+const int CURTAIN_1_OPEN_PIN  = 2;
+const int CURTAIN_1_CLOSE_PIN = 3;
+const int CURTAIN_2_OPEN_PIN  = 4;
+const int CURTAIN_2_CLOSE_PIN = 5;
 
 /**
  * INPUT Analog pins for 2 button commands [OPEN|CLOSE|STOP].
@@ -44,7 +44,7 @@ const int CLOSE_BUTTON = A5;
 /**
  * Active threshold; when voltage signal equals or greater than.
  */
-const int ACTIVE_THRESHOLD = 1020;
+const int ACTIVE_THRESHOLD = 1000;
 
 /**
  * This is an int representing a second.
@@ -70,7 +70,7 @@ const int CLOSE_STATE = 2;
 /**
  * Curtain timers accumulators.
  */
-int curtain_timer   = 0;
+int curtain_timer = 0;
 
 /**
  * The last calculated second [MEMORY].
@@ -83,9 +83,9 @@ unsigned long now = 0;
 /**
  * Main loop globals.
  */
-int open   = 0;
-int close  = 0;
-int stop   = 1;
+int open                = 0;
+int close               = 0;
+int stop                = 1;
 int is_currently_active = 0;
 
 /**
@@ -98,6 +98,8 @@ void setup()
 	// Setup output pins (digital).
 	pinMode(CURTAIN_1_OPEN_PIN, OUTPUT);
 	pinMode(CURTAIN_1_CLOSE_PIN, OUTPUT);
+	pinMode(CURTAIN_2_OPEN_PIN, OUTPUT);
+	pinMode(CURTAIN_2_CLOSE_PIN, OUTPUT);
 
 	// Setup input pins (analog).
 	pinMode(OPEN_BUTTON, INPUT);
